@@ -26,10 +26,10 @@ publishing {
 
 publishing {
     repositories {
-        maven {
+//        maven {
             // change to point to your repo, e.g. http://my.org/repo
-            url uri('D:/Android/repos')
-        }
+//            url uri('D:/Android/repos')
+//        }
     }
 }
 

@@ -19,7 +19,7 @@ import com.yn.annotations.InjectProvider;
         authorities = "com.yn.authorities",
         name = ".FirstProvider",
         grantUriPermission = @InjectGrantUriPermission(
-                path = "D:/",
+//                path = "D:/",
                 pathPrefix = "yn",
                 pathPattern= "E:/"
         ),

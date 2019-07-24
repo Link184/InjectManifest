@@ -15,7 +15,6 @@ apply plugin: "com.dorongold.task-tree"
 
 android {
     compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
 //    sourceSets {
 //        main {
 //            manifest.srcFile "$project.projectDir/src/main/AndroidManifestOld.xml"
