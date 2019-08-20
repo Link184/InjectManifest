@@ -9,7 +9,7 @@ class InjectManifest implements Plugin<Project> {
 
     void apply(Project project) {
         project.android.defaultConfig.javaCompileOptions.annotationProcessorOptions
-                .arguments = ['AndroidManifestPath':project.android.sourceSets.main.manifest.srcFile.absolutePath]
+                .arguments = ['AndroidManifestPath': project.android.sourceSets.main.manifest.srcFile.absolutePath]
         dependencies(project);
         project.extensions.create('manifestConfig', ManifestConfigExt, project)
 
@@ -38,10 +38,10 @@ class InjectManifest implements Plugin<Project> {
         def javaCompile = variant.hasProperty('javaCompiler') ? variant.javaCompiler : variant.javaCompile
         javaCompile.doLast {
             println "detected: originManifestPath:${project.manifestConfig.originManifestPath}"
-            println "detected: genManifestPath:${project.manifestConfig.genManifestPath}"
+            println "detected: genManifestPath:$project.buildDir/generated/source/apt/${variant.buildType.name}/AndroidManifest.xml"
             println "detected: saveOrigin:${project.manifestConfig.saveOrigin}"
 
-            def genManifest = new File(project.manifestConfig.genManifestPath)
+            def genManifest = new File("$project.buildDir/generated/source/apt/${variant.buildType.name}/AndroidManifest.xml")
             def originManifest = new File(project.manifestConfig.originManifestPath);
             if (genManifest.exists()) {
                 check(originManifest, project.manifestConfig.saveOrigin)
@@ -76,9 +76,13 @@ class InjectManifest implements Plugin<Project> {
 
 
     private static void dependencies(Project project) {
+        project.repositories {
+            maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        }
+
         project.dependencies {
-            annotationProcessor 'com.whyn:injectmanifest-compiler:1.1.0'
-            compileOnly 'com.whyn:injectmanifest-annotations:1.0.0'
+            annotationProcessor 'com.link184:injectmanifest-compiler:0.1.1-SNAPSHOT'
+            compileOnly 'com.link184:injectmanifest-annotations:0.1.0-SNAPSHOT'
         }
     }
 
@@ -92,7 +96,7 @@ class ManifestConfigExt {
     ManifestConfigExt(Project project) {
 //        originManifestPath = "$project.projectDir/src/main/AndroidManifest.xml"
         originManifestPath = project.android.sourceSets.main.manifest.srcFile.absolutePath
-        genManifestPath = "$project.buildDir/generated/source/apt/debug/AndroidManifest.xml"
+        genManifestPath = "$project.buildDir/generated/source/apt/release/AndroidManifest.xml"
         saveOrigin = true
     }
 

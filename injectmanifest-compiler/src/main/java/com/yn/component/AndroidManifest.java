@@ -19,6 +19,7 @@ public abstract class AndroidManifest<T> {
     private static final String QUALIFIED_NAME_MANIFEST = "manifest";
     private static final String QUALIFIED_NAME_APPLICATION = "application";
     private static final String QUALIFIED_NAME_ACTIVITY = "activity";
+    private static final String QUALIFIED_NAME_ACTIVITY_ALIAS = "activity-alias";
     private static final String QUALIFIED_NAME_SERVICE = "service";
     private static final String QUALIFIED_NAME_PROVIDER = "provider";
     private static final String QUALIFIED_NAME_USESPERMISSION = "uses-permission";
@@ -43,6 +44,7 @@ public abstract class AndroidManifest<T> {
     private static final int ACTION_SERVICE = 0x03;
     private static final int ACTION_RECEIVER = 0x04;
     private static final int ACTION_PROVIDER = 0x04;
+    private static final int ACTION_ACTIVITY_ALIAS = 0x08;
 //    private static final int ACTION_INTENTFILTER = 0x05;
 //    private static final int ACTION_ACTION = 0x06;
 //    private static final int ACTION_CATEGORY = 0x07;
@@ -329,6 +331,44 @@ public abstract class AndroidManifest<T> {
 //            isLastElement = lastElement;
 //            return this;
 //        }
+    }
+
+    public static class ActivityAliasCollection extends ComponentBasicCollection<NodeActivityAlias> {
+
+        @Override
+        public void collect(String uri, String localName, String qName, Set<Attribute> attributes) {
+            if (qName.equals(mQualifiedName)) {
+                lastAction = ACTION_ACTIVITY_ALIAS;
+                lastComponentName = Utils.getProperName(sPackageName,
+                        Utils.getValueFromCollection(KEY_ATTR_NAME, attributes));
+                if (!attributes.isEmpty()) {
+                    collect(new NodeActivityAlias(lastComponentName).<NodeActivityAlias>addAttr(attributes));
+                }
+            }
+        }
+
+        @Override
+        public void write2File(INode nodeWriter) {
+            try {
+                for (NodeActivityAlias activityAlias: mCollections) {
+                    nodeWriter.startTag(mQualifiedName, activityAlias.attrs.all());
+                    writeIntentFilter2File(nodeWriter, activityAlias.intentFilter);
+                    writeMetaData2File(nodeWriter, activityAlias.metaDatas);
+                    nodeWriter.endTag(mQualifiedName);
+                }
+                if (isLastElement) {
+                    nodeWriter.endTag(QUALIFIED_NAME_APPLICATION);
+                    nodeWriter.endTag(QUALIFIED_NAME_MANIFEST);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public String setQName() {
+            return QUALIFIED_NAME_ACTIVITY_ALIAS;
+        }
     }
 
     public static class ServiceCollection extends ComponentBasicCollection<NodeService> {

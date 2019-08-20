@@ -2,6 +2,7 @@ package com.yn.compiler;
 
 import com.google.auto.service.AutoService;
 import com.yn.annotations.InjectActivity;
+import com.yn.annotations.InjectActivityAlias;
 import com.yn.annotations.InjectApp;
 import com.yn.annotations.InjectData;
 import com.yn.annotations.InjectGrantUriPermission;
@@ -18,6 +19,7 @@ import com.yn.component.AndroidManifest;
 import com.yn.component.Collections;
 import com.yn.component.ComponentBasic;
 import com.yn.component.NodeActivity;
+import com.yn.component.NodeActivityAlias;
 import com.yn.component.NodeApp;
 import com.yn.component.NodeGrantUriPermission;
 import com.yn.component.NodeManifest;
@@ -64,6 +66,7 @@ public class ManifestCollectionProcessor extends AbstractProcessor {
     private static final String TAG_APPLICATION = "tag_application";
     private static final String TAG_PERMISSION = "tag_permission";
     private static final String TAG_ACTIVITY = "tag_activity";
+    private static final String TAG_ACTIVITY_ALIAS = "tag_activity_alias";
     private static final String TAG_SERVICE = "tag_service";
     private static final String TAG_RECEIVER = "tag_receiver";
     private static final String TAG_PROVIDER = "tag_provider";
@@ -88,6 +91,7 @@ public class ManifestCollectionProcessor extends AbstractProcessor {
         annotations.add(InjectReceiver.class.getCanonicalName());
         annotations.add(InjectProvider.class.getCanonicalName());
         annotations.add(InjectUsesPermission.class.getCanonicalName());
+        annotations.add(InjectActivityAlias.class.getCanonicalName());
         return annotations;
     }
 
@@ -125,6 +129,8 @@ public class ManifestCollectionProcessor extends AbstractProcessor {
             return false;
         if (!parseActivity(roundEnvironment, androidManifest))
             return false;
+        if (!parseActivityAlias(roundEnvironment, androidManifest))
+            return false;
         if (!parseService(roundEnvironment, androidManifest))
             return false;
         if (!parseReceiver(roundEnvironment, androidManifest))
@@ -146,6 +152,7 @@ public class ManifestCollectionProcessor extends AbstractProcessor {
         manifest.plantComponent(new AndroidManifest.UsesPermissionCollection(), TAG_PERMISSION);
         manifest.plantComponent(new AndroidManifest.ApplicationCollection(), TAG_APPLICATION);
         manifest.plantComponent(new AndroidManifest.ActivityCollection(), TAG_ACTIVITY);
+        manifest.plantComponent(new AndroidManifest.ActivityAliasCollection(), TAG_ACTIVITY_ALIAS);
         manifest.plantComponent(new AndroidManifest.ServiceCollection(), TAG_SERVICE);
         manifest.plantComponent(new AndroidManifest.ProviderCollection(), TAG_PROVIDER);
         manifest.plantComponent(new AndroidManifest.ReceiverCollection().isLastElement(true), TAG_RECEIVER);
@@ -306,6 +313,33 @@ public class ManifestCollectionProcessor extends AbstractProcessor {
         parseIntentFilter(nodeService, service.intentFilter());
         parseMetaData(nodeService, service.metaData());
         serviceCollection.collect(nodeService);
+    }
+
+    private boolean parseActivityAlias(RoundEnvironment roundEnvironment, Collections manifest) {
+        AndroidManifest.ActivityAliasCollection activityAliasCollection =
+                (AndroidManifest.ActivityAliasCollection) manifest.getTag(TAG_ACTIVITY_ALIAS);
+        checkCollection(activityAliasCollection, AndroidManifest.ActivityAliasCollection.class, TAG_ACTIVITY_ALIAS);
+        for (Element element : roundEnvironment.getElementsAnnotatedWith(InjectActivityAlias.class)) {
+            InjectActivityAlias activityAlias = element.getAnnotation(InjectActivityAlias.class);
+            parseActivityAlias(activityAliasCollection, activityAlias, element);
+            isNeedGenerateXml = true;
+        }
+        return true;
+    }
+
+    private void parseActivityAlias(AndroidManifest.ActivityAliasCollection collections,
+                                    InjectActivityAlias activityAlias,
+                                    Element element) {
+        String activityAliasTargetName = Utils.getProperName(
+                mElementUtils.getPackageOf(element).getQualifiedName().toString(), activityAlias.targetActivity());
+        NodeActivityAlias nodeActivityAlias = new NodeActivityAlias(activityAliasTargetName)
+                .name(activityAlias.name())
+                .enabled(activityAlias.enabled().getResult())
+                .exported(activityAlias.exported().getResult())
+                .label(activityAlias.label())
+                .targetActivity(activityAliasTargetName);
+
+        collections.collect(nodeActivityAlias);
     }
 
     private boolean parseActivity(RoundEnvironment roundEnvironment, Collections manifest) {

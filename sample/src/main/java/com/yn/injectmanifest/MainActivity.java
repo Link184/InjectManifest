@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.yn.annotations.InjectActivity;
+import com.yn.annotations.InjectActivityAlias;
 import com.yn.annotations.InjectData;
 import com.yn.annotations.InjectIntentFilter;
 import com.yn.annotations.InjectMetaData;
@@ -25,6 +26,7 @@ import com.yn.annotations.InjectUsesPermission;
         ),
         metaData = @InjectMetaData(name = "haha")
 )
+@InjectActivityAlias(name = "jora", targetActivity = ".Ololo")
 public class MainActivity extends AppCompatActivity {
     @InjectUsesPermission(Manifest.permission.SEND_SMS)
     String field1;
