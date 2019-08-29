@@ -15,5 +15,7 @@ public @interface InjectActivityAlias {
     Correct enabled() default Correct.NONE;
     Correct exported() default Correct.NONE;
     String label() default "";
+
+    InjectIntentFilter intentFilter() default @InjectIntentFilter;
 //    String permission() default "";
 }

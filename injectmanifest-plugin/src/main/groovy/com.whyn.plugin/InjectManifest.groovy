@@ -81,8 +81,8 @@ class InjectManifest implements Plugin<Project> {
         }
 
         project.dependencies {
-            annotationProcessor 'com.link184:injectmanifest-compiler:0.1.1-SNAPSHOT'
-            compileOnly 'com.link184:injectmanifest-annotations:0.1.0-SNAPSHOT'
+            annotationProcessor 'com.link184:injectmanifest-compiler:0.1.2-SNAPSHOT'
+            compileOnly 'com.link184:injectmanifest-annotations:0.1.2-SNAPSHOT'
         }
     }
 

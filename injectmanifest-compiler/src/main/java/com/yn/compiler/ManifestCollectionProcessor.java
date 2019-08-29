@@ -338,6 +338,7 @@ public class ManifestCollectionProcessor extends AbstractProcessor {
                 .exported(activityAlias.exported().getResult())
                 .label(activityAlias.label())
                 .targetActivity(activityAliasTargetName);
+        parseIntentFilter(nodeActivityAlias, activityAlias.intentFilter());
 
         collections.collect(nodeActivityAlias);
     }
