@@ -341,8 +341,21 @@ public abstract class AndroidManifest<T> {
                 lastAction = ACTION_ACTIVITY_ALIAS;
                 lastComponentName = Utils.getProperName(sPackageName,
                         Utils.getValueFromCollection(KEY_ATTR_NAME, attributes));
-                if (!attributes.isEmpty()) {
+                if (attributes != null && !attributes.isEmpty()) {
                     collect(new NodeActivityAlias(lastComponentName).<NodeActivityAlias>addAttr(attributes));
+                }
+            }
+            if (lastAction != ACTION_ACTIVITY_ALIAS)
+                return;
+            if (attributes != null && !attributes.isEmpty()) {
+                if (QUALIFIED_NAME_ACTION.equals(qName)) {
+                    collect((NodeActivityAlias) new NodeActivityAlias(lastComponentName).addAction(attributes));
+                } else if (QUALIFIED_NAME_CATEGORY.equals(qName)) {
+                    collect((NodeActivityAlias) new NodeActivityAlias(lastComponentName).addCategory(attributes));
+                } else if (QUALIFIED_NAME_DATA.equals(qName)) {
+                    collect((NodeActivityAlias) new NodeActivityAlias(lastComponentName).addData(attributes));
+                } else if (QUALIFIED_NAME_METADATA.equals(qName)) {
+                    collect((NodeActivityAlias) new NodeActivityAlias(lastComponentName).addMetaData(attributes));
                 }
             }
         }

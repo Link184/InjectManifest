@@ -54,7 +54,7 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${versions.androidPlugin}"
-        classpath 'com.link184:injectmanifest-plugin:0.1.1-SNAPSHOT'
+        classpath 'com.link184:injectmanifest-plugin:0.1.6-SNAPSHOT'
 
         classpath "com.novoda:bintray-release:${versions.bintrayRelease}"
 //        classpath "com.whyn:injectmanifest-plugin:${versions.injectmanifest_plugin_version}"
